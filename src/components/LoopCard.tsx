@@ -1,4 +1,4 @@
-import { ClipboardPaste, Copy, Pause, Pencil, Repeat, Shuffle, Trash2 } from "lucide-react";
+import { ChevronDown, ClipboardPaste, Copy, Pause, Pencil, Repeat, Shuffle, Trash2 } from "lucide-react";
 import type { ReactNode } from "react";
 import { duration } from "../lib/format";
 import { useNow } from "../lib/hooks";
@@ -29,6 +29,9 @@ export function LoopCard({
   onEdit,
   onDelete,
   onPaste,
+  open,
+  onToggle,
+  className = "",
 }: {
   channel: Channel;
   run: ChannelRun | undefined;
@@ -37,6 +40,9 @@ export function LoopCard({
   onEdit: (i: number) => void;
   onDelete: (i: number) => void;
   onPaste: (macros: string[]) => void;
+  open: boolean;
+  onToggle: () => void;
+  className?: string;
 }) {
   const now = useNow(250);
   const clipboard = useStore((s) => s.clipboard);
@@ -65,12 +71,17 @@ export function LoopCard({
           : { text: `Next in ${duration(remaining)}`, tone: "bg-accent-soft text-accent" };
 
   return (
-    <div data-tour="loop-card" className="mx-4 mt-6 overflow-hidden rounded-xl border border-line bg-side">
+    <div data-tour="loop-card" className={`overflow-hidden rounded-xl border border-line bg-side ${className}`}>
       <div className="relative flex items-center gap-3 px-4 py-3">
         <div className={`grid size-10 shrink-0 place-items-center rounded-full ${active ? "bg-accent text-white" : "bg-raised text-sub"}`}>
           {channel.enabled ? <Repeat className={`size-5 ${active ? "animate-[spin_3s_linear_infinite]" : ""}`} /> : <Pause className="size-5" />}
         </div>
-        <div className="min-w-0 flex-1">
+        <div
+          role="button"
+          tabIndex={-1}
+          onClick={onToggle}
+          className="min-w-0 flex-1 cursor-pointer select-none"
+        >
           <div className="flex items-center gap-2">
             <span className="font-semibold text-ink">Loop</span>
             {count > 1 && (
@@ -97,13 +108,25 @@ export function LoopCard({
           <span className={`max-w-48 truncate rounded-full px-2.5 py-0.5 text-xs font-medium tabular-nums ${state.tone}`}>{state.text}</span>
           {active && run && run.postCount > 0 && <span className="text-[11px] text-mute">{run.postCount} posted this run</span>}
         </div>
+        {count > 0 && (
+          <Tooltip label={open ? "Collapse loop" : `Show ${count === 1 ? "macro" : `${count} macros`}`}>
+            <button
+              aria-label={open ? "Collapse loop" : "Expand loop"}
+              aria-expanded={open}
+              onClick={onToggle}
+              className="grid size-8 shrink-0 place-items-center rounded-md text-mute transition-colors hover:bg-hover hover:text-ink"
+            >
+              <ChevronDown className={`size-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+            </button>
+          </Tooltip>
+        )}
         <div className="absolute inset-x-0 bottom-0 h-0.5 bg-line">
           <div className="h-full bg-accent transition-[width] duration-300 ease-linear" style={{ width: `${progress * 100}%` }} />
         </div>
       </div>
 
-      {count > 0 && (
-        <ol className="divide-y divide-line/60">
+      {count > 0 && open && (
+        <ol className="max-h-[min(40vh,360px)] divide-y divide-line/60 overflow-y-auto overscroll-contain border-t border-line/60">
           {channel.messages.map((m, i) => (
             <li
               key={`${i}-${m}`}

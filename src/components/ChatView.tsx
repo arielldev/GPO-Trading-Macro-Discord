@@ -1,5 +1,5 @@
 import { Hash, ScrollText, Settings, Timer } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { clock, duration } from "../lib/format";
 import { useBotStatus, useIdentity } from "../lib/hooks";
 import { useStore } from "../lib/store";
@@ -11,6 +11,16 @@ import { IconButton, MenuButton, Reveal, Toggle } from "./ui";
 import { Tooltip } from "./Tooltip";
 
 const EMPTY: LogEvent[] = [];
+const SHOWN = 50;
+const PIN_KEY = "loop-pin-open";
+
+function readPin(): boolean {
+  try {
+    return localStorage.getItem(PIN_KEY) !== "0";
+  } catch {
+    return true;
+  }
+}
 
 export function ChatView({ account, channel }: { account: Account; channel: Channel }) {
   const update = useStore((s) => s.update);
@@ -22,14 +32,32 @@ export function ChatView({ account, channel }: { account: Account; channel: Chan
   const unread = useStore((s) => s.unread[account.id] ?? 0);
   const status = useBotStatus(account.id);
   const [editing, setEditing] = useState<number | null>(null);
+  const [open, setOpenState] = useState(readPin);
+  const [older, setOlder] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
+  const setOpen = useCallback((v: boolean) => {
+    setOpenState(v);
+    try {
+      localStorage.setItem(PIN_KEY, v ? "1" : "0");
+    } catch {
+      return;
+    }
+  }, []);
 
   const sent = useMemo(() => logs.filter((l) => l.level === "sent" && l.channelId === channel.id), [logs, channel.id]);
   const who = useIdentity(account);
   const anonymous = useStore((s) => s.config.anonymous);
   const every = Math.max(channel.cooldown, channel.slowmode);
 
-  useEffect(() => setEditing(null), [channel.id]);
+  useEffect(() => {
+    setEditing(null);
+    setOlder(false);
+  }, [channel.id]);
+  useEffect(() => {
+    if (editing !== null) setOpen(true);
+  }, [editing, setOpen]);
+  const shown = older ? sent : sent.slice(-SHOWN);
+  const hidden = sent.length - shown.length;
   useEffect(() => {
     scroller.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, [sent.length, channel.messages.length, channel.id]);
@@ -116,6 +144,23 @@ export function ChatView({ account, channel }: { account: Account; channel: Chan
         </div>
       </header>
 
+      <div className="shrink-0 border-b border-line/60 px-4 py-2.5">
+        <LoopCard
+          channel={channel}
+          run={status?.channels[channel.id]}
+          running={!!status?.running}
+          editing={editing}
+          onEdit={setEditing}
+          onDelete={(i) => {
+            mutateChannel((c) => void c.messages.splice(i, 1));
+            setEditing(null);
+          }}
+          onPaste={paste}
+          open={open}
+          onToggle={() => setOpen(!open)}
+        />
+      </div>
+
       <div ref={scroller} className="flex min-h-0 flex-1 flex-col-reverse overflow-y-auto pb-6">
         <div className="flex min-h-full shrink-0 flex-col justify-end">
           <div className="px-4 pt-10">
@@ -126,19 +171,6 @@ export function ChatView({ account, channel }: { account: Account; channel: Chan
             <p className="mt-1 text-sub">Build macros with the emojis below — they run on a loop in this channel.</p>
           </div>
 
-          <LoopCard
-            channel={channel}
-            run={status?.channels[channel.id]}
-            running={!!status?.running}
-            editing={editing}
-            onEdit={setEditing}
-            onDelete={(i) => {
-              mutateChannel((c) => void c.messages.splice(i, 1));
-              setEditing(null);
-            }}
-            onPaste={paste}
-          />
-
           {sent.length > 0 && (
             <div className="mx-4 mt-6 mb-1 flex items-center gap-2">
               <div className="h-px flex-1 bg-line" />
@@ -146,7 +178,15 @@ export function ChatView({ account, channel }: { account: Account; channel: Chan
               <div className="h-px flex-1 bg-line" />
             </div>
           )}
-          {sent.map((l, i) => (
+          {hidden > 0 && (
+            <button
+              onClick={() => setOlder(true)}
+              className="mx-auto my-2 rounded-full bg-raised px-3 py-1 text-xs font-medium text-sub transition-colors hover:text-ink"
+            >
+              Show {hidden} earlier
+            </button>
+          )}
+          {shown.map((l, i) => (
             <DiscordMessage
               key={`${l.ts}-${i}`}
               author={who.name}
@@ -158,7 +198,7 @@ export function ChatView({ account, channel }: { account: Account; channel: Chan
               }
               badge={<Badge>Sent</Badge>}
               content={l.content ?? ""}
-              compact={i > 0 && l.ts - sent[i - 1].ts < 5 * 60_000}
+              compact={i > 0 && l.ts - shown[i - 1].ts < 5 * 60_000}
             />
           ))}
         </div>
