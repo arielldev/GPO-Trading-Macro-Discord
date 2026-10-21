@@ -1,162 +1,63 @@
-# Trading And Shi - Automation to send Trades and Shi
+<p align="center">
+  <img src="images/banner.jpg" alt="Trading And Shi: trade ads on autopilot" width="100%">
+</p>
 
-![Logo](images/logo.webp)
+<p align="center">
+  <a href="https://github.com/arielldev/GPO-Trading-Macro-Discord/releases/latest"><img src="https://img.shields.io/badge/Download-Windows-c8102e?style=for-the-badge&logo=windows&logoColor=white" alt="Download for Windows"></a>
+  <a href="https://discord.gg/unPZxXAtfb"><img src="https://img.shields.io/badge/Discord-Join%20Server-5865f2?style=for-the-badge&logo=discord&logoColor=white" alt="Join the Discord"></a>
+</p>
 
-[![Discord](https://img.shields.io/badge/Discord-Join%20Server-7289da?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/unPZxXAtfb)
+<p align="center"><b>Build trade ads from your server's emojis. Pick your channels, press ▶, and go AFK.</b></p>
 
-## What is This?
+> [!WARNING]
+> **Use an alt account.** Automated posting breaks Discord's Terms of Service use this at your own risk.
 
-A utility application that automates message distribution across Discord channels. The bot interfaces with Discord's API to post predefined messages at scheduled intervals with configurable timing. Designed as an educational tool for understanding API interactions and message scheduling.
+## Download
 
----
+Get the **`-setup.exe`** installer from the [latest release](https://github.com/arielldev/GPO-Trading-Macro-Discord/releases/latest). Windows 10 and 11, 64-bit.
 
-## ⚠️ CRITICAL DISCLAIMER
+Seeing "Windows protected your PC"? The app isn't code-signed yet. Click **More info → Run anyway**.
 
-**Read this before proceeding:**
+## How it works
 
-This application interacts with Discord in ways that may violate their Community Guidelines. While the technical functionality is straightforward, Discord's Terms of Service restrict automated posting and certain types of account activity.
-
-**Your responsibility:**
-
-- You choose whether to use this tool
-- Any account consequences are on you
-- We provide no guarantees or support for account safety
-- This is provided "as-is" for informational purposes
-
-If you're not comfortable with account risk, please don't use this.
-
----
-
-## Quick Setup
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org) 20+
-- [Rust](https://rustup.rs) (stable) and the [Tauri prerequisites](https://tauri.app/start/prerequisites/) for your OS
-- A Discord account (preferably a test account)
-
-### Installation
-
-```bash
-npm install
-```
-
-### Run
-
-```bash
-npm run tauri dev
-```
-
-### Build an installer
-
-```bash
-npm run tauri build
-```
-
-The installer is written to `src-tauri/target/release/bundle/`.
-
-Settings are stored in `config.json` inside the app's config folder (`%APPDATA%\com.arielldev.tradingandshi` on Windows).
-
----
-
-## Getting Started
-
-### Step 1: Add an Account
-
-1. Click the **+** in the left rail
-2. Paste your token (open discord.com, press `F12` → **Network**, send a message, open the `messages` request and copy the `Authorization` header)
-3. Confirm the profile card and name the account
-
-### Step 2: Build Your Emoji Library
-
-1. Click the logo at the top of the rail to open the **Emoji Library**
-2. Click **Add a Server** and pick any server you're in — every emoji in it is pulled in automatically
-3. Use **Sync** (or **Sync all servers**) to refresh. Renamed, re-uploaded and deleted emojis are listed, and **Update messages** fixes any scheduled messages that use them
-
-### Step 3: Add Channels
-
-1. Open an account and click **Add Channel**
-2. Pick a server, then a text channel (or paste a channel ID)
-3. The channel's slowmode is detected automatically and used as the cooldown (change it if you like), then choose whether to pull that server's emojis into your library
-
-### Step 4: Build Macros
-
-- Click emojis in the palette under the chat to add them to a macro sequence — filter by server or search
-- Drag pills to reorder them (or focus a pill and use ← →), and click ✕ to remove one
-- Click **Add to loop**. The channel's Loop card shows the interval, a live countdown to the next post, and the macros it cycles through (one is picked at random each time)
-- Hover a macro in the Loop card to **Edit** or **Delete** it
-
-### Step 5: Start
-
-1. Press ▶ in the user panel at the bottom of the channel list
-2. Before starting, the app re-checks every emoji and channel you use:
-   - **Renamed** emojis (e.g. `:hello:` → `:h:`) are updated
-   - **Re-uploaded** emojis (same name, new ID) are swapped to the new one
-   - **Deleted** emojis are removed from messages
-   - Deleted or inaccessible channels can be disabled
-   - Channel renames and slowmode changes are picked up, and cooldowns below the new slowmode are raised
-3. Watch countdowns in the channel list, sent messages in the chat, and details in the **Activity** panel
-4. Press ■ to stop
-
----
+1. **Add an account.** Click **+** and paste your token. A guided tour shows you where.
+2. **Add channels.** Pick a server and channel. Its slowmode is detected and used as the cooldown.
+3. **Build macros.** Click emojis to build a trade ad, then **Add to loop**.
+4. **Press ▶.** Every channel posts on its own timer while you're AFK. Press **■** to stop.
 
 ## Features
 
-- 💬 **Discord-style UI**: Account rail, channel list, chat view and composer
-- 😀 **Emoji Library**: Pull all emojis from a server in one click
-- 🧩 **Macro Builder**: Click emojis to build drag-and-drop sequences
-- 🐢 **Slowmode detection**: Cooldowns follow each channel's slowmode automatically
-- 🩺 **Pre-start checks**: Detects renamed, re-uploaded and deleted emojis and broken channels
-- 🔄 **Multi-Account & Multi-Channel**: Run several accounts at once
-- 🔁 **Loops**: Each channel loops through its macros, picking one at random each time
-- ⏱️ **Flexible Timing**: Cooldowns, between-channel delays, variance, breaks and auto-stop timer
-- 📊 **Live Activity**: Countdowns and a real-time log
-- ℹ️ **About & Community**: Live Discord member count, links to the server and other projects (ⓘ at the bottom of the rail)
+|                          |                                                                        |
+| ------------------------ | ---------------------------------------------------------------------- |
+| 🔁 **Loops**             | Each channel cycles its macros at random                               |
+| 🐢 **Slowmode-aware**    | Cooldowns follow each channel's slowmode automatically                 |
+| 😀 **Emoji library**     | Pull every emoji from a server in one click, and sync when they change |
+| 🩺 **Pre-start checks**  | Fixes renamed, re-uploaded and deleted emojis before every run         |
+| 📋 **Copy and paste**    | Move loops or single macros between channels and accounts              |
+| ⏱️ **Timing and safety** | Random delays, breaks and an auto-stop timer                           |
+| 🕶️ **Anonymous mode**    | Hides names, avatars and times, for screenshots and streaming          |
+| 🪶 **Minimal mode**      | Less RAM, CPU and data, with the same posts                            |
+| 👥 **Multi-account**     | Run several accounts side by side                                      |
 
----
+Your token and settings never leave your computer. They're stored in `%APPDATA%\com.arielldev.tradingandshi\config.json`.
 
-## Common Issues
+## Troubleshooting
 
-### Connection Fails
+- **"Invalid or expired token".** Get a fresh token; the app shows how under **How do I get my token?**
+- **Messages not sending.** Check that the account can post in that channel, and look at **Activity** for the exact error.
+- **Rate limited.** The app waits it out and retries on its own.
 
-- Verify you copied the complete token
-- Ensure Discord is still logged in
-- Try refreshing your token using the browser method above
+## Build from source
 
-### Messages Not Sending
+Needs [Node.js](https://nodejs.org) 20+, [Rust](https://rustup.rs) and the [Tauri prerequisites](https://tauri.app/start/prerequisites/).
 
-- Double-check Channel IDs (get fresh ones if unsure)
-- Confirm you have posting permissions in target channels
-- Check if Discord is applying rate-limits
+```bash
+npm install
+npm run tauri dev     # run locally
+npm run tauri build   # installers in src-tauri/target/release/bundle/
+```
 
-### Token Issues
+## Support the project
 
-- Discord tokens can expire
-- Use the browser method again to get a fresh one
-
----
-
-## Community & Support
-
-**Have questions or want to connect?**
-
-- 🔗 **Discord Server**: [Join Our Community](#) _(link available to verified members)_
-- 📧 **Support**: Contact through repository issues
-- 🐛 **Bug Reports**: Use GitHub issues for technical problems
-
----
-
-## Technical Notes
-
-- Messages are posted via Discord's official API endpoint
-- Timing randomization is applied to reduce detection likelihood
-- Your token and data never leave your system
-- Application can be stopped/started at any time
-
----
-
-## Final Thoughts
-
-This tool exists in a gray area. Use good judgment. Discord changes their enforcement regularly, and the risks of using account automation vary. We're not encouraging or discouraging—just providing the capability.
-
-**What you do with it is entirely your call.**
+- ⭐ **Star the repo.** It's free, takes one click, and helps more people find it.
+- 💬 **[Join the Discord](https://discord.gg/unPZxXAtfb)** for help, updates and more macros.
